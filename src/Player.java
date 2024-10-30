@@ -20,7 +20,7 @@ public class Player implements KeyListener {
 
 
         try {
-            playerImg = ImageIO.read(new File("C:\\Users\\Teacher\\Desktop\\game dev\\hero_game.png"));
+            playerImg = ImageIO.read(new File("hero_game.png"));
             System.out.println("Player image loaded successfully.");
 
         
