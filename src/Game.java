@@ -33,11 +33,12 @@ public class Game implements Runnable {
         //character positions
         map = new Tile[mapHeight][mapWidth];    
         player = new Player(1, 1, this);  
-        enemies = new Enemy[1];           
-        enemies[0] = new Enemy(13, 9, this);
+        enemies = new Enemy[5];           
+       
+        
 
         initMap();
-
+        resetGame();
         canvas = new GameCanvas(this);
         frame.add(canvas);
         canvas.setPreferredSize(new Dimension(mapWidth * tileSize, mapHeight * tileSize));
@@ -56,29 +57,32 @@ public class Game implements Runnable {
     // Buttons for game menu
     private void handleKeyPress(KeyEvent e) {
         if (gameState == GameState.RUNNING) {
-            player.keyPressed(e);
+            player.keyPressed(e);  
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {  
                 gameState = GameState.PAUSED;
             }
         } else if (gameState == GameState.PAUSED) {
-            if (e.getKeyCode() == KeyEvent.VK_P) {  
+            if (e.getKeyCode() == KeyEvent.VK_P || e.getKeyCode() == KeyEvent.VK_ESCAPE) {  
                 gameState = GameState.RUNNING;
             }
-            if (e.getKeyCode() == KeyEvent.VK_N) { 
-                resetGame();
-            }
-            if (e.getKeyCode() == KeyEvent.VK_E) {  
-                System.exit(0);
-            }
-        } else if (gameOver) {
+        }
+        if (e.getKeyCode() == KeyEvent.VK_N) {  
+            resetGame();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_E) { 
+            System.exit(0);
+        }
+    
+        if (gameOver) {
             if (e.getKeyCode() == KeyEvent.VK_N) {  
                 resetGame();
             }
-            if (e.getKeyCode() == KeyEvent.VK_E) {  
+            if (e.getKeyCode() == KeyEvent.VK_E) { 
                 System.exit(0);
             }
         }
     }
+    
 
     // maps and blocks
     private void initMap() {
@@ -95,11 +99,11 @@ public class Game implements Runnable {
                 }
             }
         }
-        // Clearing Blocks around the player
+        // clearing Blocks around the player
         map[1][1] = new Tile(Tile.Type.EMPTY);
         map[1][2] = new Tile(Tile.Type.EMPTY);
         map[2][1] = new Tile(Tile.Type.EMPTY);
-        // Clear around enemy
+        // clear around enemy
         map[9][12] = new Tile(Tile.Type.EMPTY);
         map[9][13] = new Tile(Tile.Type.EMPTY);
         map[8][13] = new Tile(Tile.Type.EMPTY);
@@ -111,23 +115,25 @@ public class Game implements Runnable {
         gameOver = false;  
         gameState = GameState.RUNNING;  
         
-        // Reset the timer
+        //timer restting
         startTime = System.currentTimeMillis(); 
         timer = 60; 
-        //timerRunning = true;
+       
         
-        //player reset position
+        
         player.x = 1;
         player.y = 1;
 
-        // new map
+       
         initMap();
-
-        // Reset position of enemy
         enemies[0] = new Enemy(13, 9, this);
+        // enemies[1] = new Enemy(9, 9, this);
+        // enemies[2] = new Enemy(1, 5, this);
+        // enemies[3] = new Enemy(7, 9, this);
+        // enemies[4] = new Enemy(5, 7, this);
+        
     }
 
-    // Check for collision between the player and any enemy
     public void checkCollision() {
         for (Enemy enemy : enemies) {
             if (enemy != null && player.x == enemy.x && player.y == enemy.y) {
@@ -167,7 +173,7 @@ public class Game implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (running) {
+            if (gameState == GameState.RUNNING && running) {
                 player.update();
                 for (Enemy enemy : enemies) {
                     if (enemy != null) {
